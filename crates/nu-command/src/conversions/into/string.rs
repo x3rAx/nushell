@@ -57,7 +57,23 @@ impl Command for SubCommand {
                 description: "convert integer to string and append three decimal places",
                 example: "5 | into string -d 3",
                 result: Some(Value::String {
-                    val: "5.000".to_string(),
+                    // FIXME: This is a hack to get tests to work with with
+                    //        different locales. We should rather call the test
+                    //        with a specific locale. The `nu!` macro can take a
+                    //        locale as an argument. Wherever we call `nu!` to
+                    //        run this example, we should pass the locale to the
+                    //        macro.
+                    //
+                    //        When this is fixed, replace the below block with:
+                    //
+                    //        ```
+                    //        val: "5.000".to_string(),
+                    //        ```
+                    val: {
+                        let locale = get_system_locale();
+                        let decimal_point = locale.decimal();
+                        format!("5{}000", decimal_point)
+                    },
                     span: Span::test_data(),
                 }),
             },
